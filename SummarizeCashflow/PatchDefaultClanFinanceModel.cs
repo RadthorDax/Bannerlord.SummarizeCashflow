@@ -23,13 +23,13 @@ namespace SummarizeCashflow
 				ExplainedNumber incomeNumber = new ExplainedNumber(0.0f, incomeExplaination);
 				__instance.CalculateClanIncome(clan, ref incomeNumber, applyWithdrawals);
 
-				float workshop		= 0f;
-				float caravan		= 0f;
-				float party			= 0f;
-				float tax			= 0f;
-				float contract		= 0f;
-				float acres			= 0f; // Support for Entrepreneur mod (https://www.nexusmods.com/mountandblade2bannerlord/mods/138)
-				float otherIncome	= 0f;
+				float workshop    = 0f;
+				float caravan     = 0f;
+				float party       = 0f;
+				float tax         = 0f;
+				float contract    = 0f;
+				float acres       = 0f; // Support for Entrepreneur mod (https://www.nexusmods.com/mountandblade2bannerlord/mods/138)
+				float otherIncome = 0f;
 
 				foreach (StatExplainer.ExplanationLine line in incomeExplaination.Lines)
 				{
@@ -84,17 +84,17 @@ namespace SummarizeCashflow
 				ExplainedNumber expenseNumber = new ExplainedNumber(0.0f, expenseExplanation);
 				__instance.CalculateClanExpenses(clan, ref expenseNumber, applyWithdrawals);
 
-				string playerName	= Hero.MainHero.Name.ToString();
-				float playerWages	= 0f;
-				float caravanWages	= 0f;
-				float partyWages	= 0f;
-				float garrisonWages	= 0f;
-				float finance		= 0f;
-				float support		= 0f;
-				float mercs			= 0f;
-				float tithe			= 0f;
-				float patrolWages	= 0f; // Support for Buy Patrols mod (https://www.nexusmods.com/mountandblade2bannerlord/mods/343)
-				float otherExpense	= 0f;
+				string playerName   = Hero.MainHero.Name.ToString();
+				float playerWages   = 0f;
+				float caravanWages  = 0f;
+				float partyWages    = 0f;
+				float garrisonWages = 0f;
+				float finance       = 0f;
+				float support       = 0f;
+				float mercs         = 0f;
+				float tithe         = 0f;
+				float patrolWages   = 0f; // Support for Buy Patrols mod (https://www.nexusmods.com/mountandblade2bannerlord/mods/343)
+				float otherExpense  = 0f;
 
 				foreach (StatExplainer.ExplanationLine line in expenseExplanation.Lines)
 				{
