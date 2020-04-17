@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SummarizeCashflow": {
+      "commandName": "Executable",
+      "executablePath": "S:\\Games\\_SteamGames\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\Bannerlord.exe",
+      "commandLineArgs": "/singleplayer _MODULES_*Native*SandBoxCore*CustomeBattle*SandBox*StoryMode*SummarizeCashflow*_MODULES_",
+      "workingDirectory": "S:\\Games\\_SteamGames\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client"
+    }
+  }
+}
