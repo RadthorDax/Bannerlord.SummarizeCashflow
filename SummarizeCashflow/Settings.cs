@@ -9,8 +9,8 @@ namespace SummarizeCashflow
     public static class Settings
     {
         public static bool DebugModeEnabled = false;
-        public static List<Group> IncomeGroups = new List<Group>();
-        public static List<Group> ExpenseGroups = new List<Group>();
+        public static List<LineGroup> IncomeGroups = new List<LineGroup>();
+        public static List<LineGroup> ExpenseGroups = new List<LineGroup>();
 
         public static void Load()
         {
@@ -28,14 +28,14 @@ namespace SummarizeCashflow
                     List<string> matches = new List<string>();
                     foreach (XmlNode match in group.SelectNodes("Match"))
                         matches.Add(match.InnerText);
-                    IncomeGroups.Add(new Group(group.SelectSingleNode("Label").InnerText, matches));
+                    IncomeGroups.Add(new LineGroup(group.SelectSingleNode("Label").InnerText, matches));
                 }
                 foreach (XmlNode group in compatability.SelectSingleNode("Expenses").SelectNodes("Group"))
                 {
                     List<string> matches = new List<string>();
                     foreach (XmlNode match in group.SelectNodes("Match"))
                         matches.Add(match.InnerText);
-                    ExpenseGroups.Add(new Group(group.SelectSingleNode("Label").InnerText, matches));
+                    ExpenseGroups.Add(new LineGroup(group.SelectSingleNode("Label").InnerText, matches));
                 }
             }
             catch (Exception e)

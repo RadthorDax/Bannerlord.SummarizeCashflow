@@ -8,14 +8,14 @@ using TaleWorlds.InputSystem;
 
 namespace SummarizeCashflow
 {
-	public struct Group
+	public struct LineGroup
 	{
 		public string Label;
 		public List<string> Matches;
 		public bool CaseSensitive;
 		public float Gold;
 
-		public Group(string label, List<string> matches = null, bool caseSensitive = false, float gold = 0f)
+		public LineGroup(string label, List<string> matches = null, bool caseSensitive = false, float gold = 0f)
 		{
 			Label = label;
 			Matches = matches;
@@ -40,11 +40,11 @@ namespace SummarizeCashflow
 				ExplainedNumber incomeNumber = new ExplainedNumber(0.0f, incomeExplaination);
 				__instance.CalculateClanIncome(clan, ref incomeNumber, applyWithdrawals);
 
-				List<Group> incomeGroups = new List<Group>();
+				List<LineGroup> incomeGroups = new List<LineGroup>();
 				if (Settings.IncomeGroups.Count > 0)
 					incomeGroups.AddRange(Settings.IncomeGroups);
 
-				Group[] incomeGroupArray = incomeGroups.ToArray();
+				LineGroup[] incomeGroupArray = incomeGroups.ToArray();
 				float otherIncome = 0f;
 
 				foreach (StatExplainer.ExplanationLine line in incomeExplaination.Lines)
@@ -75,7 +75,7 @@ namespace SummarizeCashflow
 					}
 				}
 
-				foreach (Group incomeGroup in incomeGroupArray)
+				foreach (LineGroup incomeGroup in incomeGroupArray)
 					if (incomeGroup.Gold != 0f)
 						goldChange.Add(incomeGroup.Gold, new TextObject(incomeGroup.Label));
 
@@ -99,15 +99,15 @@ namespace SummarizeCashflow
 				string playerName   = Hero.MainHero.Name.ToString();
 				string playerNamePosessive = playerName + (playerName.EndsWith("s") ? "'" : "'s");
 
-				List<Group> expenseGroups = new List<Group>()
+				List<LineGroup> expenseGroups = new List<LineGroup>()
 				{
-					new Group(playerNamePosessive + " Party Wages", new List<string> { playerName }, true)
+					new LineGroup(playerNamePosessive + " Party Wages", new List<string> { playerName }, true)
 				};
 
 				if (Settings.ExpenseGroups.Count > 0)
 					expenseGroups.AddRange(Settings.ExpenseGroups);
 
-				Group[] expenseGroupArray = expenseGroups.ToArray();
+				LineGroup[] expenseGroupArray = expenseGroups.ToArray();
 				float otherExpenses = 0f;
 
 				foreach (StatExplainer.ExplanationLine line in expenseExplanation.Lines)
@@ -138,7 +138,7 @@ namespace SummarizeCashflow
 					}
 				}
 
-				foreach (Group expenseGroup in expenseGroupArray)
+				foreach (LineGroup expenseGroup in expenseGroupArray)
 					if (expenseGroup.Gold != 0f)
 						goldChange.Add(expenseGroup.Gold, new TextObject(expenseGroup.Label));
 
