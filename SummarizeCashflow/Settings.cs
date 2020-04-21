@@ -22,7 +22,7 @@ namespace SummarizeCashflow
 
                 DebugModeEnabled = bool.Parse(settings.SelectSingleNode("DebugModeEnabled").InnerText);
 
-                XmlNode compatability = settings.SelectSingleNode("Compatability");
+                XmlNode compatability = settings.SelectSingleNode("Entries");
                 foreach (XmlNode group in compatability.SelectSingleNode("Income").SelectNodes("Group"))
                 {
                     List<string> matches = new List<string>();
