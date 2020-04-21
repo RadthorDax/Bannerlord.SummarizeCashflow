@@ -12,15 +12,15 @@ namespace SummarizeCashflow
 	{
 		public string Label;
 		public List<string> Matches;
-		public float Gold;
 		public bool CaseSensitive;
+		public float Gold;
 
-		public Group(string label, List<string> matches = null, float gold = 0f, bool caseSensitive = false)
+		public Group(string label, List<string> matches = null, bool caseSensitive = false, float gold = 0f)
 		{
 			Label = label;
 			Matches = matches;
-			Gold = gold;
 			CaseSensitive = caseSensitive;
+			Gold = gold;
 		}
 	}
 
@@ -101,7 +101,7 @@ namespace SummarizeCashflow
 
 				List<Group> expenseGroups = new List<Group>()
 				{
-					new Group(playerNamePosessive + " Party Wages", new List<string> { playerName })
+					new Group(playerNamePosessive + " Party Wages", new List<string> { playerName }, true)
 				};
 
 				if (Settings.ExpenseGroups.Count > 0)
