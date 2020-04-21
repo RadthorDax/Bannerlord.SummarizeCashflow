@@ -1,0 +1,76 @@
+<Settings>
+    <!-- DebugModeEnabled: When set to "true", any income or expense items that are lumped into the Miscellaneous categories are output to the message log. -->
+    <DebugModeEnabled>false</DebugModeEnabled>
+    <!-- Entries allows configuration and rearrangement of all lines of the default tooltip, including some examples of adding compatibilty for other mods.
+            Add a new <Group> for each aggregate entry you want to add to the tooltip in either the <Income> or <Expenses> section as appropriate.
+            <Label> should contain the new description for the group.
+            <Match> should contain a lowercase snippet of text that always appears in the lines you want to group. Try to make sure it is unique and in lowercase.
+                    You can have multiple matches in a single group. All of the matched lines will become grouped under the new label.
+    -->
+    <Entries>
+        <Income>
+            <Group>
+                <Label>Workshop Profit</Label>
+                <!-- Yeah, I know, I know... There just isn't a nice way to match workshop income entries that also supports custom workshops and custom settlements. -->
+                <Match> at </Match>
+            </Group>
+            <Group>
+                <Label>Caravan Profit</Label>
+                <Match>caravan</Match>
+            </Group>
+            <Group>
+                <Label>Clan Party Profit</Label>
+                <Match>party</Match>
+            </Group>
+            <Group>
+                <Label>Taxes and Tariffs Collected</Label>
+                <Match>tax</Match>
+                <Match>tariff</Match>
+            </Group>
+            <Group>
+                <Label>Mercenary Earnings</Label>
+                <Match>mercenary</Match>
+            </Group>
+            <Group>
+                <!-- Support for Entrepreneur mod. (https://www.nexusmods.com/mountandblade2bannerlord/mods/138) -->
+                <Label>Revenue from Land Investments</Label>
+                <Match>acres</Match>
+            </Group>
+        </Income>
+        <Expenses>
+            <Group>
+                <Label>Caravan Wages</Label>
+                <Match>caravan</Match>
+            </Group>
+            <Group>
+                <Label>Clan Party Wages</Label>
+                <Match>party</Match>
+            </Group>
+            <Group>
+                <Label>Clan Party Financial Support</Label>
+                <Match>finance</Match>
+            </Group>
+            <Group>
+                <Label>Garrison Wages</Label>
+                <Match>garrison</Match>
+            </Group>
+            <Group>
+                <!-- Support for Buy Patrols mod. (https://www.nexusmods.com/mountandblade2bannerlord/mods/343) -->
+                <Label>Patrol Wages</Label>
+                <Match>patrol</Match>
+            </Group>
+            <Group>
+                <Label>Support to Kingdom Clans</Label>
+                <Match>king's</Match>
+            </Group>
+            <Group>
+                <Label>Mercenary Contracts</Label>
+                <Match>mercenary</Match>
+            </Group>
+            <Group>
+                <Label>Tithe to Kingdom</Label>
+                <Match>to king</Match>
+            </Group>
+        </Expenses>
+    </Entries>
+</Settings>

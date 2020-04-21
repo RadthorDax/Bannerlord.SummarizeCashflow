@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using System.Collections.Generic;
 using TaleWorlds.Core;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.SandBox.GameComponents;
@@ -7,6 +8,21 @@ using TaleWorlds.InputSystem;
 
 namespace SummarizeCashflow
 {
+	public struct Group
+	{
+		public string Label;
+		public List<string> Matches;
+		public float Gold;
+		public bool CaseSensitive;
+
+		public Group(string label, List<string> matches = null, float gold = 0f, bool caseSensitive = false)
+		{
+			Label = label;
+			Matches = matches;
+			Gold = gold;
+			CaseSensitive = caseSensitive;
+		}
+	}
 
 	[HarmonyPatch(typeof(DefaultClanFinanceModel), "CalculateClanGoldChange")]
 	internal class PatchDefaultClanFinanceModel
@@ -19,35 +35,39 @@ namespace SummarizeCashflow
 			{
 				ExplainedNumber goldChange = new ExplainedNumber(0.0f, explanation);
 
+				// Income
 				StatExplainer incomeExplaination = new StatExplainer();
 				ExplainedNumber incomeNumber = new ExplainedNumber(0.0f, incomeExplaination);
 				__instance.CalculateClanIncome(clan, ref incomeNumber, applyWithdrawals);
 
-				float workshop    = 0f;
-				float caravan     = 0f;
-				float party       = 0f;
-				float tax         = 0f;
-				float contract    = 0f;
-				float acres       = 0f; // Support for Entrepreneur mod (https://www.nexusmods.com/mountandblade2bannerlord/mods/138)
+				List<Group> incomeGroups = new List<Group>();
+				if (Settings.IncomeGroups.Count > 0)
+					incomeGroups.AddRange(Settings.IncomeGroups);
+
+				Group[] incomeGroupArray = incomeGroups.ToArray();
 				float otherIncome = 0f;
 
 				foreach (StatExplainer.ExplanationLine line in incomeExplaination.Lines)
 				{
 					string desc = line.Name.ToLower();
+					bool matched = false;
 
-					if (desc.Contains(" at "))
-						workshop += line.Number;
-					else if (desc.Contains("caravan"))
-						caravan += line.Number;
-					else if (desc.Contains("party"))
-						party += line.Number;
-					else if (desc.Contains("tax") || desc.Contains("tariff"))
-						tax += line.Number;
-					else if (desc.Contains("mercenary"))
-						contract += line.Number;
-					else if (desc.Contains("acres"))
-						acres += line.Number;
-					else
+					for (int i = 0; i < incomeGroupArray.Length; i++)
+					{
+						string matchAgainst = (incomeGroupArray[i].CaseSensitive ? line.Name : desc);
+						foreach (string match in incomeGroups[i].Matches)
+						{
+							if (matchAgainst.Contains(match))
+							{
+								incomeGroupArray[i].Gold += line.Number;
+								matched = true;
+								break;
+							}
+						}
+						if (matched)
+							break;
+					}
+					if (!matched)
 					{
 						otherIncome += line.Number;
 						if (Settings.DebugModeEnabled)
@@ -55,100 +75,75 @@ namespace SummarizeCashflow
 					}
 				}
 
-				if (workshop != 0f)
-					goldChange.Add(workshop, new TextObject("Workshop Profit"));
-				if (caravan != 0f)
-					goldChange.Add(caravan, new TextObject("Caravan Profit"));
-				if (party != 0f)
-					goldChange.Add(party, new TextObject("Clan Party Profit"));
-				if (tax != 0f)
-					goldChange.Add(tax, new TextObject("Taxes and Tariffs Collected"));
-				if (contract != 0f)
-					goldChange.Add(contract, new TextObject("Mercenary Earnings"));
-				if (acres != 0f)
-					goldChange.Add(acres, new TextObject("Revenue from Land Investments"));
+				foreach (Group incomeGroup in incomeGroupArray)
+					if (incomeGroup.Gold != 0f)
+						goldChange.Add(incomeGroup.Gold, new TextObject(incomeGroup.Label));
+
 				if (otherIncome != 0f)
 					goldChange.Add(otherIncome, new TextObject("Miscellaneous Income"));
 
+				// Kingdom Tribute. Directly lifted from DefaultClanFinanceModel.CalculateKingdomTribute()
 				if (clan.Kingdom != null)
 				{
 					ExplainedNumber tributeNumber = new ExplainedNumber(0.0f);
 					foreach (KingdomTribute kingdomTribute in clan.Kingdom.KingdomTributes)
-					{
 						tributeNumber.AddFactor((float)(-kingdomTribute.Percentage * 0.01), new TextObject("{=AtFv5RMW}Kingdom Tribute"));
-					}
-					goldChange.Add(tributeNumber.ResultNumber, new TextObject("Tribute"));
+					goldChange.Add(tributeNumber.ResultNumber, new TextObject("Kingdom Tributes"));
 				}
 
+				// Expenses
 				StatExplainer expenseExplanation = new StatExplainer();
 				ExplainedNumber expenseNumber = new ExplainedNumber(0.0f, expenseExplanation);
 				__instance.CalculateClanExpenses(clan, ref expenseNumber, applyWithdrawals);
 
 				string playerName   = Hero.MainHero.Name.ToString();
-				float playerWages   = 0f;
-				float caravanWages  = 0f;
-				float partyWages    = 0f;
-				float garrisonWages = 0f;
-				float finance       = 0f;
-				float support       = 0f;
-				float mercs         = 0f;
-				float tithe         = 0f;
-				float patrolWages   = 0f; // Support for Buy Patrols mod (https://www.nexusmods.com/mountandblade2bannerlord/mods/343)
-				float otherExpense  = 0f;
+				string playerNamePosessive = playerName + (playerName.EndsWith("s") ? "'" : "'s");
+
+				List<Group> expenseGroups = new List<Group>()
+				{
+					new Group(playerNamePosessive + " Party Wages", new List<string> { playerName })
+				};
+
+				if (Settings.ExpenseGroups.Count > 0)
+					expenseGroups.AddRange(Settings.ExpenseGroups);
+
+				Group[] expenseGroupArray = expenseGroups.ToArray();
+				float otherExpenses = 0f;
 
 				foreach (StatExplainer.ExplanationLine line in expenseExplanation.Lines)
 				{
 					string desc = line.Name.ToLower();
+					bool matched = false;
 
-					if (line.Name.Contains(playerName))
-						playerWages += line.Number;
-					else if (desc.Contains("caravan"))
-						caravanWages += line.Number;
-					else if (desc.Contains("party"))
-						partyWages += line.Number;
-					else if (desc.Contains("garrison"))
-						garrisonWages += line.Number;
-					else if (desc.Contains("finance"))
-						finance += line.Number;
-					else if (desc.Contains("mercenary"))
-						mercs += line.Number;
-					else if (desc.Contains("to king"))
-						tithe += line.Number;
-					else if (desc.Contains("king's"))
-						support += line.Number;
-					else if (desc.Contains("patrol"))
-						patrolWages += line.Number;
-					else
+					for (int i = 0; i < expenseGroupArray.Length; i++)
 					{
-						otherExpense += line.Number;
+						string matchAgainst = (expenseGroupArray[i].CaseSensitive ? line.Name : desc);
+						foreach (string match in expenseGroupArray[i].Matches)
+						{
+							if (matchAgainst.Contains(match))
+							{
+								expenseGroupArray[i].Gold += line.Number;
+								matched = true;
+								break;
+							}
+						}
+						if (matched)
+							break;
+					}
+					if (!matched)
+					{
+						otherExpenses += line.Number;
 						if (Settings.DebugModeEnabled)
 							InformationManager.DisplayMessage(new InformationMessage("Unknown Expense: " + line.Name));
 					}
 				}
 
-				if (playerWages != 0f)
-				{
-					string playerNamePosessive = playerName.EndsWith("s") ? "'" : "'s";
-					goldChange.Add(playerWages, new TextObject(playerName + playerNamePosessive + " Party Wages"));
-				}
-				if (caravanWages != 0f)
-					goldChange.Add(caravanWages, new TextObject("Caravan Wages"));
-				if (partyWages != 0f)
-					goldChange.Add(partyWages, new TextObject("Clan Party Wages"));
-				if (finance != 0f)
-					goldChange.Add(finance, new TextObject("Clan Party Financial Support"));
-				if (garrisonWages != 0f)
-					goldChange.Add(garrisonWages, new TextObject("Garrison Wages"));
-				if (patrolWages != 0f)
-					goldChange.Add(patrolWages, new TextObject("Patrol Wages"));
-				if (support != 0f)
-					goldChange.Add(support, new TextObject("Support to Kingdom Clans"));
-				if (mercs != 0f)
-					goldChange.Add(mercs, new TextObject("Mercenary Contracts"));
-				if (tithe != 0f)
-					goldChange.Add(tithe, new TextObject("Tithe to Kingdom"));
-				if (otherExpense != 0f)
-					goldChange.Add(otherExpense, new TextObject("Miscellaneous Expenses"));
+				foreach (Group expenseGroup in expenseGroupArray)
+					if (expenseGroup.Gold != 0f)
+						goldChange.Add(expenseGroup.Gold, new TextObject(expenseGroup.Label));
+
+				if (otherExpenses != 0f)
+					goldChange.Add(otherExpenses, new TextObject("Miscellaneous Expenses"));
 
 				__result = goldChange.ResultNumber;
 
