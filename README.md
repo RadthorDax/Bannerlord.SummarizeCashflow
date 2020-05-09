@@ -10,19 +10,23 @@ If you see income or expenses getting lumped into a Miscellaneous category, it c
 Compatible by default with the Buy Patrols and Entrepreneur mods, and any other mods can be easily supported by adding a few lines to the config file!
 
 
+## Game Versions:
+- ☑ e1.4.0 BETA
+- ☑ e1.3.0
+
+
 ## Installation:
-Preferably use Vortex, but if you can't, copy the SummarizeCashflow folder extracted from the zip archive into Bannerlord's "Modules" directory.
-You may need to unblock the two .dll files (0Harmony.dll and SummarizeCashflow.dll) found in this mod's "bin/Win64_Shipping_Client" directory.
+- Preferably use Vortex, but if you can't, copy the SummarizeCashflow folder extracted from the zip archive into Bannerlord's "Modules" directory.
+- You may need to unblock the two .dll files (0Harmony.dll and SummarizeCashflow.dll) found in this mod's "bin/Win64_Shipping_Client" directory.
 
 
 ## Configuration:
-In the Settings.xml file, in the <Entries> node, you'll find separate configuration for <Income> and <Expenses>.
-<Group>s inside these nodes can be added, removed and rearranged as you want. Add a new one to add support for a mod.
-There are examples of mod compatibility support, those being Buy Patrols and Entrepreneur.
-Each <Group> should have a <Label> and at least one <Match>.
-The <Label> is the description text that will accompany that grouped gold total in the tooltip.
-A <Match> should be lowercase and will add lines from the original tooltip into the group's total if the provided text is found in the line.
-Endorsing this mod gives you a 20% buff to good karma for at least 30 minutes.
+- In the Settings.xml file, in the \<Entries\> node, you'll find separate configuration for \<Income\> and \<Expenses\>.
+- \<Group\>s inside these nodes can be added, removed and rearranged as you want. Add a new one to add support for a mod.
+- There are examples of mod compatibility support, those being Buy Patrols and Entrepreneur.
+- Each \<Group\> should have a \<Label\> and at least one \<Match\>.
+- The \<Label\> is the description text that will accompany that grouped gold total in the tooltip.
+- A \<Match\> should be lowercase and will add lines from the original tooltip into the group's total if the provided text is found in the line.
 
 
 ## Known Issues:
